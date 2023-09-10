@@ -3,49 +3,57 @@ import java.util.*;
 
 public class Main {
     static int[] visited;
-    static int N;
-
-    //입력 받은 걸 어떻게 처리할거냐..
-    //1.빈 2차원 배열에다?
-    //2.2차원 배열인데 연결 정보에 대한 것만
-    //3.
-    //일단 방문여부를 체크하는 숫자가 필요하다.
+    static int cnt;
+    static ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
 
     public static void main(String args[]) throws IOException {
-        Scanner sc = new Scanner(System.in);
-        N = sc.nextInt();
-        int M = sc.nextInt();
-        int R = sc.nextInt();
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+        StringBuilder sb = new StringBuilder();
 
+        st = new StringTokenizer(br.readLine());
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        int R = Integer.parseInt(st.nextToken());
         visited = new int[N+1];
-        int[][] lines = new int[M][2];
-        for(int i = 0 ; i < M; i++){
-            lines[i][0] = sc.nextInt();
-            lines[i][1] = sc.nextInt();
+        cnt = 1;
+
+        //정점 숫자만큼 넓혀준다.
+        for(int i =0; i < N+1; i++) {
+            graph.add(new ArrayList<>());
         }
 
-        Arrays.sort(lines, new Comparator<int[]>() {
-            @Override
-            public int compare(int[] a, int[] b) {
-                if (a[0] != b[0]) {//두 배열의 첫번째 요소가 똑같다면
-                    return Integer.compare(a[0], b[0]);
-                } else {
-                    return Integer.compare(a[1], b[1]);
-                }
-            }
-        });
+        //그래프에 정보 입력
+        for(int i = 0; i < M; i++) {
+            st = new StringTokenizer(br.readLine());
+            int start_dot = Integer.parseInt(st.nextToken());
+            int end_dot = Integer.parseInt(st.nextToken());
 
-        dfs(lines, R);
+            // 1->4 && 4->1
+            graph.get(start_dot).add(end_dot);
+            graph.get(end_dot).add(start_dot);
+        }
+
+        // 오름차순을 위해 정렬
+        for(int i = 1; i < graph.size(); i++) {
+            Collections.sort(graph.get(i));
+        }
+
+        dfs(R);
+        for(int i = 1 ; i < N+1; i++){
+            System.out.println(visited[i]);
+        }
     }
 
-    public static void dfs(int[][] E, int R) {  // V : 정점 집합, E : 간선 집합, R : 시작 정점
-        visited[R] = 1;
-        System.out.print(R);
+    public static void dfs(int R) {  // V : 정점 집합, E : 간선 집합, R : 시작 정점
+        visited[R] = cnt;
 
         //인접한 정점들을 어떻게 뽑아낼래?
-        for(int i = 0 ; i < N ; i++){
-            if(E[i][0] == R && visited[E[i][1]] == 0){//연결되어있고 아직 방문하지 않았다면
-                dfs(E, E[i][1]);
+        for(int i = 0 ; i  < graph.get(R).size();  i++){
+            int newVertex = graph.get(R).get(i);
+            if(visited[newVertex] == 0){
+                cnt++;
+                dfs(newVertex);
             }
         }
     }
