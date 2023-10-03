@@ -22,6 +22,7 @@ public class Main {
             sc = new StringTokenizer(br.readLine());
             for (int j = 0 ; j  < col; j++){
                 box[i][j] = Integer.parseInt(sc.nextToken());
+                if(box[i][j] == 1){
                     int[] tmp = {i,j};
                     queue.offer(tmp);
                 }
